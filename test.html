@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>test</title>
+</head>
+<body>
+<input type="text" name="test" value="cats" id="myText">
+<script type="text/javascript">
+	document.addEventListener('keypress', function(event){
+		if (event.keyCode === 13 || event.which === 13) {
+			var text = document.getElementById("myText").value;
+			console.log(text);
+			}
+		});
+
+</script>
+</body>
+</html>
