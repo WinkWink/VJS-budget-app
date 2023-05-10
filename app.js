@@ -1,12 +1,46 @@
 // module pattern IIFE that will return an obj
+/*(Immediately Invoked Function Expression)
+it runs as soon as it is defined, self executing anonymous function
+in javascript objects are king , if you understand objects, you understand JS
+A JavaScript object is a collection of named values
+the named values in objects are called properties 
+methods are actions that can be performed on objects 
+we create modules because we want to keep pieces of code that are related to each other together
+separate independent units
+the modules can have variables and functions that are private to that module , only accessible to module
+if public, other functions and modules can access and use - data encapsulation 
+data encapsulation allows us to hide the implementation details of a specific module from the outside scope
+so we only expose a public interface, which is sometimes called an API 
+module pattern uses closures and IIFEs
+IIFE scope cannot be accessed from outside
+module pattern returns an object containing all of the functions we want to be public 
+(the functions we want to give the outside access to)
+anything in return is accessible to the outside scope 
+this works because of closures
+what is not in the return {} is in the closure 
+*/
+ 
+// the budget module and ui controller module are independent from each other, they are stand alone 
+// user interface is separated from the data, this is called separation of concerns 
+
 var budgetController = (function(){
  	
+	// expense object contructor 
+	/*
+	in an object method, this refers to the global object 
+	it is good practice to start constructor with capital 
+	in constructor function this does not have a value it is a sub for the new object
+	the value of this will become the new object when a new obj is created 
+	*/ 
 	var Expense = function(id, description, value){
 		this.id = id;
 		this.description = description;
 		this.value = value;
 		this.percentage = -1;
 	};
+
+	// The JavaScript prototype property allows you to add new properties to object constructors
+	// The JavaScript prototype property also allows you to add new methods to objects constructors
 
 	Expense.prototype.calcPercentage = function(totalIncome){
 		if (totalIncome > 0) {
@@ -20,6 +54,7 @@ var budgetController = (function(){
 		return this.percentage;
 	}
 
+	// income constructor
 	var Income = function(id, description, value){
 		this.id = id;
 		this.description = description;
@@ -50,6 +85,7 @@ var budgetController = (function(){
 
 // how we create the objects with the constructor above 
 	return {
+		// addItem: set up like this is a method 
 		addItem: function(type, des, value){
 			var newItem, ID;
 
@@ -60,7 +96,6 @@ var budgetController = (function(){
 				ID = 0;
 			}
 			
-
 			// create new item based on income or expense 
 			if (type === 'exp'){
 				newItem = new Expense(ID, des, value);
@@ -130,6 +165,7 @@ var budgetController = (function(){
 	}
 
 })();
+// the parens at the end invoke the anonymous function 
 
 var UIController = (function(){
 	var DOMstrings = {
@@ -285,6 +321,12 @@ var UIController = (function(){
 })();
 
 // GLOBAL APP CONTROLLER
+// this is the controller that reads data from UI and then connects to budget (data) controller
+// modules can receive arguments, they are just function expressions
+// we will pass the other two modules as arguments to the controller so that this controller knows about the other two
+// parameters are budgetCtrl and UICtrl and when we call the function at the end we invoke the function with the two other modules
+// event handlers are controlled here, central place where we decide what happens upon event and then delegate tasks to other controllers 
+
 var controller = (function(budgetCtrl, UICtrl){
 
 	var setupEventListeners = function(){
