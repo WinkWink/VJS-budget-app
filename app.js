@@ -32,6 +32,7 @@ var budgetController = (function(){
 	in constructor function this does not have a value it is a sub for the new object
 	the value of this will become the new object when a new obj is created 
 	*/ 
+	// this is an object function contructor , used to instantiate lots of objects, create objects with expense function constructor 
 	var Expense = function(id, description, value){
 		this.id = id;
 		this.description = description;
@@ -54,7 +55,8 @@ var budgetController = (function(){
 		return this.percentage;
 	}
 
-	// income constructor
+	// income function constructor, for function constructor we use capital letter 
+	// create income objects with income function contructor 
 	var Income = function(id, description, value){
 		this.id = id;
 		this.description = description;
@@ -70,6 +72,8 @@ var budgetController = (function(){
 	};
 
 	// global data structure | data object | data model 
+	// object where all data lives , arrays that store instances 
+	// all items is also an object 
 	var data = {
 		allItems:{
 			exp:[],
@@ -86,10 +90,13 @@ var budgetController = (function(){
 // how we create the objects with the constructor above 
 	return {
 		// addItem: set up like this is a method 
+		// in the public scope 
+		// finding out what type (expense or income) the get income method will return the TYPE of item (income or expense)
 		addItem: function(type, des, value){
 			var newItem, ID;
 
-			//create id for a new item
+			//create id for a new item, have to get type and length because there are two different types 
+			// if there is nothing in the array, when array is empty the new ID is 0, otherwise we give it a new id based on length
 			if (data.allItems[type].length > 0) {
 				ID = data.allItems[type][data.allItems[type].length - 1].id + 1;
 			}else{
@@ -97,6 +104,7 @@ var budgetController = (function(){
 			}
 			
 			// create new item based on income or expense 
+			// creates new object , expense or income based on type
 			if (type === 'exp'){
 				newItem = new Expense(ID, des, value);
 			} else if (type === 'inc'){
@@ -105,7 +113,9 @@ var budgetController = (function(){
 			}
 
 			// push it to our data structure and return the new element
+			// push method adds new element to the end of array 
 			data.allItems[type].push(newItem);
+			// return new element
 			return newItem;
 		},
 
@@ -168,6 +178,7 @@ var budgetController = (function(){
 // the parens at the end invoke the anonymous function 
 
 var UIController = (function(){
+	// this is an object that will help with query selector 
 	var DOMstrings = {
 		inputType: '.add__type',
 		inputDescription: '.add__description',
@@ -208,9 +219,12 @@ var UIController = (function(){
 				}
 			};
 
+	// public data/methods 
 	return {
+		// return this object  
 		getinput: function(){
 			return {
+			// returns an object with three properties
 			type: document.querySelector(DOMstrings.inputType).value,
 			description: document.querySelector(DOMstrings.inputDescription).value,
 			value: parseFloat(document.querySelector(DOMstrings.inputValue).value)
@@ -232,11 +246,13 @@ var UIController = (function(){
 			}
 			
 			// replace the placeholder text with input 
+			// replace method searches for a string and replaces the string 
 			newHtml = html.replace('%id%', obj.id);
 			newHtml = newHtml.replace('%description%', obj.description);
 			newHtml = newHtml.replace('%value%', formatNumber(obj.value, type));
 
 			// insert the html into the dom 
+			// insertAdjacentHTML accepts position and then the text (html)
 			document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
 
 		},
@@ -313,6 +329,7 @@ var UIController = (function(){
 
 		},
 
+		// makes dom string publuc
 		getDOMstrings: function(){
 			return DOMstrings;
 		}
@@ -326,17 +343,22 @@ var UIController = (function(){
 // we will pass the other two modules as arguments to the controller so that this controller knows about the other two
 // parameters are budgetCtrl and UICtrl and when we call the function at the end we invoke the function with the two other modules
 // event handlers are controlled here, central place where we decide what happens upon event and then delegate tasks to other controllers 
+// here we tell the other modules what to do 
 
 var controller = (function(budgetCtrl, UICtrl){
-
+	// sets up event listeners
 	var setupEventListeners = function(){
 	
+	// storing public domstrings from ui controller as DOM
 	var DOM = UICtrl.getDOMstrings();
 
+	// when input button is clicked, ctrl add item is called 
 	document.querySelector(DOM.inputBtn).addEventListener('click', ctrlAddItem);
 
+	// when return key is pressed, ctrl add item is called 
 	document.addEventListener('keypress', function(event){
-		if (event.keyCode === 13 || event.which === 13) {
+		//console.log(event)
+		if (event.keyCode === 13) {
 			ctrlAddItem();
 			}
 		});
@@ -345,7 +367,7 @@ var controller = (function(budgetCtrl, UICtrl){
 
 		document.querySelector(DOM.inputType).addEventListener('change', UICtrl.changedType);
 	};
-
+	// event listener end 
 
 	var updateBudget = function(){
 		// Calculate the budget
@@ -370,13 +392,13 @@ var controller = (function(budgetCtrl, UICtrl){
 
 	var ctrlAddItem = function(){
 		var input, newItem;
-		// get input data
+		// get input data - gets input (public method from UI controller)
 		input = UICtrl.getinput();
 
 		if (input.description !== "" && !isNaN(input.value) && input.value > 0){
-		// add the item to the budget controller
+		// add the item to the budget controller, returns an object 
 		newItem = budgetCtrl.addItem(input.type, input.description, input.value);
-		// add the item to the ui
+		// add the item to the ui, calls function in UI controller
 		UICtrl.addListItem(newItem, input.type);
 		// clear the fields
 		UICtrl.clearFields();
