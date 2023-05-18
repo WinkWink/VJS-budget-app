@@ -273,6 +273,7 @@ var UIController = (function(){
 			fieldsArr.forEach(function(current,index,array){
 				current.value = "";
 			});
+			// focus on the description 
 			fieldsArr[0].focus();
 		},
 
